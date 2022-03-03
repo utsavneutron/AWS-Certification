@@ -1,0 +1,50 @@
+AWS Cloud History
+
+Launched internally - 2002
+Amazon Infrastructure - 2003
+Launched first product - SQS - 2004
+Relaunched SQS, S3 and EC2 - 2006
+
+
+Number Facts
+Gartner Magic Quadrant - Leader 47% on the market
+
+Use Cases
+Enables to build sophisticated and scalable applications
+Enterprise IT, Backup & Big Data Storage
+
+
+AWS Regions
+A region is a cluster of data centers
+Most AWS services are region-scoped
+
+How to choose an AWS Region?
+Depends on - Compliance with data governance and legal requirements
+- Proximity to customers : reduced latency
+- Available services within a Region
+- Pricing: Varies from Region to Region
+
+AWS Availability ZOnes
+Each region has many Availability ZOnes
+Each AZ is more or more discrete data centers with redundant power, networking and connectivity
+Separate from each other, so that they're isolated from disasters
+Connected with high bandwidth, ultra low latency networking
+
+AWS Points of Presence (Edge Locations)
+216 Edge Locations
+
+AWS has Global Services:
+IAM - Identity and Access Management
+DNS Services : Route 53
+Content Delivery Network: CloudFront
+Web Application Firewall: WAF
+
+Most AWS Services are region scoped:
+Infrastructure as a Service: Amazon EC2
+Platform as a service: Elastic Beanstalk
+Function as a service: Lambda
+Software as a service: Rekognition
+
+
+AWS Tour and Services:
+Select region closer to you
