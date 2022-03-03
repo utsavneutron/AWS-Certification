@@ -1,0 +1,23 @@
+Ways to Access AWS:
+- AWS Management Console (Pw + MFA)
+- AWS Command Line Interface (CLI): protected by access keys
+- AWS Software Developer Kit (SDK) - For code: protected by keys
+
+Access keys are generated through AWS Console
+
+AWS CLI
+-A tool that enables to interact with AWS Services using commands in Command line shell
+- Direct access to the public API of AWS services
+
+AWS SDK
+- Software Development Kit
+- Language specific applications
+- Enables to access and manage AWS services programmatically
+- Embedded within the applications
+Supports
+    - SDKs (Python, JavaScript, PHP, .NET, Ruby, Java)
+    - Mobile SDKs (Android, IOS)
+    - IoT Device SDKs (Embedded C, Arduino)
+
+AWS CLI is built on AWS SDK for Python
+

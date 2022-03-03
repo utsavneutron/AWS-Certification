@@ -1,0 +1,117 @@
+IAM: Identity and Access Management Introduction
+-----------------------------------------------------
+Global Service
+
+-------------------------------------------------------------------------------------------------------------------
+Summary
+
+- Users: mapped to physical user, has a password for AWS Console
+- Groups: contains Users Only
+- Policies: JSON document that outlines permissions for uses or groups
+- Roles: For EC2 instances or AWS Services
+- Security: MFA + Password policy
+- Access Keys: Access AWS using CLI or SDK
+- Audit: IAM Credential Reports and IAM Access Advisor
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+IAM Guidelines and Best Practices
+
+- Don't use the root account except for AWS account setup
+- One physical user = One AWS User
+- Assign User to groups and assign permission to groups
+- Create a strong Password policy
+- Use and enforce Multi factor Authentication
+- Create and use Roles for giving permissions to AWS Services
+- Use Access Keys for programmatic access (CLI/SDK)
+- Audit Permissions of your account with the IAM Credentials Report and IAM Access Analyzer
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+IAM: Users and Groups
+Root Account created by Default, shouldn't be used or shared
+
+Users are people within your organization, and can be grouped
+Groups only contain users, not other groups 
+
+IAM: Permissions
+Users or Groups can be assigned JSON documents called policies
+
+
+To create User: Go to User and add users
+Create Admin account to add user and not use root account
+
+-Create group admin: Then Admin Access
+-Add Tags(Optional)
+- Download .csv
+
+-----------------------------------------------------------------------------------
+IAM Policies:
+
+Structure of JSON File:
+- Version: policy language Version
+- Id: an identifier for the policy
+- Statement: One or more
+    o Statement consists of
+        Sid: An identifier for the Statement
+        Effect: Whether the statement allows or denies Access
+        Principal: Account/user/role to which this policy applied to
+        Action: List of actions this policy allows or denies
+        Resource: List of resources to which the actions applied to
+        Condition:
+
+IAM Password policy
+Strong Password: Higher security for the account
+    Allow IAM users to change their Password
+    Prevent Password reuse
+    Requires users to change their pw after sometime
+
+Multi Factor Authentication
+Users have access to your account and can possible change configuration or delete resources.
+MFA: Password + Security Device
+
+Devices:
+Virtual MFA Device : Google Authenticator (Phone only) and Authy (multi device) (Support for multiple tokens on a single device)
+Universal 2nd Factor (U2F) Security Key: Yubikey by Yubico (Support for multiple root and IAM users using a single security key)
+Hardware Key Fob MFA Device 
+Hardware Key Fob MFA Device for AWS GovCloud
+
+Only create access keys from IAM account not root account. It is in Security under users
+
+TO configure AWS:
+In CL Prompt: "aws configure"
+    - AWS Access Key Id
+    - AWS Secret Access Key
+    - Default Region
+    - Default Output Format: [Press Enter]
+
+Try "aws iam list-users"
+
+---------------------------------------------------------------------------------------------------------------------
+
+Roles
+
+IAM Roles for Services
+    - Some AWS Service will need to perform actions on your behalf.
+    - will assign permissions to AWS Services with IAM Roles
+
+Common roles:
+    - EC2 Instance Roles
+    - Lambda Function Roles
+    - Roles for Cloud Formation
+
+IAM Security Tools
+- IAM Credentials Report (account level)
+    o A report that lists all account's users and the status of their various Credentials
+- IAM Access Advisor (User Level)
+    o Shows the service permissions granted to a user and when those services were last accessed
+    o Use this information to revise policies.
+
+
+Credential Report:
+- Creates a status report .csv file.
+
+Access Advisor: Users -> Access Advisor
+- Remove unused services
+
+
