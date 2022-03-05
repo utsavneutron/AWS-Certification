@@ -1,2 +1,178 @@
-Cloudshell is native command Prompt
+EC2
+Elastic Compute Cloud = Infrastucture as a Service
+------------------------------------------------------------------------------------
 
+Capability:
+    - Renting Virtual Machines (EC2)
+    - Storing data on virtual drives (EBS)
+    - Distributing load across machines (ELB)
+    - Scaling the services using an auto-scaling group (ASG)
+
+Knowing EC2 means understanding how cloud works
+
+---------------------------------------------------------------------------------------
+
+EC2 sizing and configuration options
+
+Based on:
+    - Operating System
+    - CPU
+    - RAM
+    - Storage space: Network attached (EBS and EFS) or Hardware (EC2 Instance store)
+    - Network card: Speed of the card, Public IP address
+    - Firewall rules: Security group
+    - Bootstrap script (configure at 1st launch): EC2 User data
+
+EC2 User data
+    - Possible to Bootstrap our instances using an EC2 User data script
+    - Bootstrapping means launching commands when a machine starts
+    - The script is only run once at the instance first start
+    - EC2 user data is used to automate boot tasks such as:
+        - installing updates
+        - installing Software
+        - Downloading common files from the internet
+
+EC2 User Data is used to bootstrap your EC2 instances using a bash script. This script can contain commands such as installing software/packages, download files from the Internet, or anything you want.
+
+- EC2 User data script runs with the root user
+
+EC2 Instance Types: example
+t2.micro is part of the AWS free tier (Upto 750 hours per month)
+
+EC2 User data is at the bottom of the Configure Instance bar. There we can paste a script that will be launched during the very and first boot.
+
+-------------------------------------------------------------------------------------------------------------------
+
+EC2 Instance Types
+
+AWS naming convention:
+
+m5.2xlarge
+    - m : instance class
+    - 5: generation
+    - .2xlarge: size within the class
+
+
+General Purpose: (T and M series)
+    - For diversity of workloads such as web servers or code repositories
+    - Balance between: Compute, Memory and networking
+
+Compute Optimized: (C series)
+    - For compute-intensive tasks that require high performance processors:
+        - Batch Processing workloads
+        - Media Transcoding
+        - High Performance web servers
+        - High Performance computing (HPC)
+        - Scientific modeling and machine learning
+        - Dedicated gaming servers
+
+Memory Optimized: (R series)
+    - For workloads that require large data sets in Memory
+    -  choose for a critical application that uses an in-memory database?
+    - Use cases:
+        - High Performance, relational/non-relational databases
+        - Distributed web scale cache stores
+        - In-memory databases optimized for BI(Business Intelligence)
+        - Applications performing real time processing of big unstructured data
+
+Storage Optimized: (i and D series)
+    - For storage intensive tasks that require high, sequential read and write access to large data sets on local Storage
+    - Use Cases:
+        - High frequency online transaction processing (OLTP) systems
+        - Relational and NoSQL databases
+        - Cache for in-memory databases (For example, Redis)
+        - Data warehousing Application
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+Introduction to Security Groups
+
+Security Groups operate at the EC2 instance level and can control traffic.
+
+- Fundamental of network Security in AWS.
+- Control how traffic is allowed into or out of our EC2 instances
+
+- Only contains allow rules
+- Security Groups rules can reference by IP or by Security Groups.
+
+- Security Groups can be attached to multiple EC2 instances within the same AWS Region/VPC.
+
+To Know:
+    - Can be attached to multiple instances
+    - Locked downto region/VPC combination
+    - Does live "outside" the EC2 - if traffic is blocked the EC2 instance won't see it
+    - Its good to maintain one separate security group for SSH access
+    - If application is not accessible (time out), then its a security group issue
+    - If application gives a "connection refused" error, then its an application error or its not launched
+    - All inbound traffic is blocked by default
+    - All outbound traffic is authorized by default.
+
+Important Ports:
+
+22 : SSH (Secure Shell) - Log into a Linux instance
+21 : FTP (File Transfer Protocol) - upload files into a file share
+22 : SFTP (Secure File Transfer Protocol) - ipload files using SSH
+80 : HTTP - access to unsecured sites
+443 : HTTPS - access to secured sites
+3389 : RDP (Remote Desktop Protocol) - log into a Windows instance
+
+0.0.0.0/0 = Anywhere in ipV4
+::/0 = Anywhere in ipV6
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
+EC2 Instances Purchases options
+
+    - On Demand Instances: Short worload, predictable pricing
+        -Pay for what you use:
+            - Linux or Windows - Billing per sec, after the first minute
+            - All other operating system - Billing per hour
+        -Highest Cost but not upfront payment
+        -No Long-term commitment
+        -Recommended for short-term and un-interrupted workloads, where you can't predict how the application will behave
+
+    - Reserved: (Minimum 1 year) Betwen 1 to 3 years
+        - Reserved Instances: Long workloads
+            - Upto 75% discount compared to On-Demand
+            - Reservation period: 1 year =+ discount | 3 years = +++discount
+            - Purchasing Options: No upfront | partial | all upfront
+            - Reserve a specific instance type
+            - Recommended for steady state usage applciations (think database)
+
+        - Convertible Reserved Instances: Long workloads with flexible instances
+            - Can change the EC2 instance type
+            - Upto 54% discount
+        - Scheduled Reserved Instances : example - every Thursday between 3 and 6 pm.
+            - launch within time window you reserve
+            - When you require a fraction of day/week/month
+            - Still commitment over 1 to 3 years
+
+    - Spot Instances: Short workloads, cheap, can lose instances(Less Reliable)
+        - Can get a discount upto 90% compared to On-demand
+        - Instances that you can "lose" at any point of time if your max price is less than the current spot price
+        - Most cost efficient instances in AWS
+        - Use for workloads that are resilient to failure:
+            - Batch Jobs
+            - Data Analysis
+            - Image Processing
+            - Any Distributed workloads
+            - Workloads with a flexible start and end time
+        -Not suitable for critical jobs or databases
+
+    - Dedicated Hosts: Book an entire physical server, control instance placement.
+        - A physical server with EC2 instance capacity fully Dedicated for use.
+        - Addresses Compliance requirements and reduces costs by allowing us to use our existing server-bound software licenses.
+                - Compliance requirements
+                - Existing server-bound software licenses
+        - Allocated for 3-year period reservation
+        - More expensive
+    
+    - Useful for software that have complicated licensing model (BYOL- Bring your own License)
+    - Or Companies with strong regulatory or compliance needs
+
+    - EC2 Dedicated Instances
+        - Instances running on hardware that's dedicated
+        - More like software not hardware
+        - May share hardware with other instances in same account
+        - No control over instance placement (can move hardware after stop/start)
+        - Per instance Billing

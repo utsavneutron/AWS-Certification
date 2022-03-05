@@ -1,0 +1,35 @@
+SSH - Mac, Linux, Windows >=10
+Putty - Windows < 10, Windows >= 10
+EC2 Instance Connect - All of above
+
+SSH
+    Allows to control remote machine, all using the command line
+SSH Port 22
+
+Instance -> check IPv4 Public IP to connect
+
+
+Linux/MAC:
+Type:
+    chmod 0400 .pemfile
+    ssh -i .pemfile ec2-user@public IP
+
+Windows <10:
+    Using Putty
+    - First use PuttyGen to convert the private key file and generate ppk file.
+    - do username@publiciPv4 in the hostname
+    - save it and then load it.
+    - go to auth setting and load the ppk file there.
+    - Save and you can load it
+
+Windows >= 10:
+Type:
+    Change the pemfile ownership by going to properties and then to advance. Then from there change ownership to your name and remove admin and system
+    ssh -i .pemfile ec2-user@public IP
+
+EC2 Instance Connect
+    Select the instance and click Connect
+
+
+NEVER ENTER IAM Access key in the Instance.
+

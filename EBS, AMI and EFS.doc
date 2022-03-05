@@ -1,0 +1,201 @@
+EBS Volume
+
+- EBS(Elastic Block Store) Volume is a network drive you can attach to your instances while they run
+- Allows instances to persist data, even after their termination
+- Can only be mounted to one instace at a time (at the CCP Level)
+- Bound to a specific availability zone
+
+EBS Volumes are created for a specific AZ. It is possible to migrate them between different AZs using EBS Snapshots.
+
+Analogy: Network USB Sticks
+
+- It is a Network drive ( not a Physical drive)
+    - Uses network to communicate the instance, which means there might be a bit of latency
+    - Detached from an EC2 instance and attached to another one quickly
+- It's locked to an availability zone (AZ)
+    - An EBS Volume in us-east-1a cannot be attached to us-east-1b
+    - To move a volume across, you first need to snapshot it.
+- Have a provisioned capacity(size in GBs, and IOPS)
+    -Billed for all the provisioned capacity
+    -Can increase the capacity of the drive over time.
+
+EBS - Delete on Termination attribute - By Default it is ticked for root volume
+    - Controls the EBS behaviour when an EC2 instance terminates
+        - By default, the root EBS volume is deleted (attribute enabled)
+        - By default, any other attached EBS volume is not deleted (attribute disabled)
+    - This can be controlled by AWS Console/AWS CLI
+    - Use case: Perserve root volume when instance is terminated
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+EBS Snapshots
+
+- Make a backup(snapshot) of your EBS Volume at a point in time
+- Not necessary to detach volume to do snapshot, but recommended
+- Can copy snapshots across AZ or Region
+
+Under Volume:
+    - Click Action and click create snapshot
+Under snapshot
+    - Can copy snapshot to any region
+    - Can create a volume from it
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+AMI Overview
+
+- AMI = Amazon Machine Image
+- AMIs are built for a specific AWS Region, they're unique for each AWS Region. You can't launch an EC2 instance using an AMI in another AWS Region, but you can copy the AMI to the target AWS Region and then use it to create your EC2 instances.
+- AMI are customization of an EC2 instance:
+    - Can add own software, configuration, operating system, monitoring..
+    - Faster boot / configuration time because all software is pre-packaged
+- AMI are built for a specific region ( Can be copied across regions)
+- Can launch EC2 instace from:
+    - Public AMI: AWS provided
+    - Own AMI: Make and maintain them yourself
+    - AWS Marketplace AMI: AMI someone else makes/sells
+
+AMI Process
+
+- Start an EC2 instance and customize it
+- Stop the instance (for data integrity)
+- Build an AMI - this will create EBS snapshot
+- Launch instances from other AMIs
+
+--------------------------------------------------------------------------------------------------------------------
+
+EC2 Instance Store
+
+- EC2 Instance Store provides the best disk I/O performance.
+
+- EBS volumes are network drives with good but "limited" performance
+- If you need a high-performance hardware disk, use EC2 Instance Store
+
+- Better I/O performance
+- EC2 Instance store lose their storage if they're stopped (ephemeral)
+- Good for buffer / cache / scratch data / temporary content
+- Risk of data loss if hardware failure
+- Backups and Replication is our responsibility
+
+You can run a database on an EC2 instance that uses an Instance Store, but you'll have a problem that the data will be lost if the EC2 instance is stopped (it can be restarted without problems). One solution is that you can set up a replication mechanism on another EC2 instance with an Instance Store to have a standby copy. Another solution is to set up backup mechanisms for your data. It's all up to you how you want to set up your architecture to validate your requirements. In this use case, it's around IOPS, so we have to choose an EC2 Instance Store.
+
+--------------------------------------------------------------------------------------------------------------------
+EBS Volume Types
+    Charaterized by:
+        - size
+        - throughput
+        - IOPS (I/O Ops per sec)
+
+- EBS Volumes come in 6 types:
+    - gp2/gp3 (SSD): General purpose SSD volume that balances price and performance for a wide variety of workloads
+        - Cost effective storage, low-latency
+        - System boot volumes, virtual desktops, development and test environments
+        - Range : 1GiB - 16TiB
+        - gp3:
+            - Baseline of 3000 IOPS and throughput of 125 MiB/s
+            - Can increase IOS upto 16000 and throughput upto 100 MiB/s independently
+        -gp2:
+            - Small gp2 volumes can burst IOPS to 3000
+            - Size of the volume and IOPS are linked, max IOPS is 16000
+            - 3 IOPS per GB means at 5,334 GB we are at the max IOPS
+
+    Provisioned IOPS (PIOPS) SSD
+    - io1 / io2 (SSD): Highest Performance SSD volume for mission-critical low-latency or high-throughput workloads
+        - Critical business applications with sustained IOPS performance
+        - Or applications that need more than 16,000 IOPS
+        - Great for databases workloads (sensitive to storage perf and consistency)
+        - io1/io2 (Range 4GiB - 16TiB)
+            -  Max PIOPS: 64,000 for Nitro EC2 instances and 32000 for other
+            - Can increase PIOPS independently from storage size
+            - io2 have more durability and more IOPS per GiB (at the same price as io1)
+        - io2 Block Express (4 GiB - 64 TiB):
+            - Sub-millisecond latency
+            - Max PIOPS: 256,000 with an IOPS:GiB ratio of 1,000:1
+        - Supports EBS Multi-attach
+
+    Hard Disk Drives (HDD)
+        - Cannot be boot volume
+        - 125 MiB to 16TiB
+        - Throughput Optimized HDD (st1)
+            - st 1 (HDD): Low cost HDD volume designed for frequency accessed, throuhput-intensive workloads
+            - Big Data, Data Warehouses, Log Processing
+            - Max throughput 500 MiB/s - max IOPS 500
+
+        Cold HDD (sc1):
+            - sc 1 (HDD): Lowest cost HHD Volume designed for less frequently accessed workload
+            - For data that is infrequently accessed
+            - Scenarios where lowest cost is important
+            - Max throughput 25- MiB/s - max IOPS 250
+
+Only gp2/gp3 and io1/io2 can be used as boot volumes.
+
+---------------------------------------------------------------------------------------------------------------------
+
+EBS Multi-Attach - io1/io2 family
+
+- Attach the same EBS volume to multiple EC2 instances in the same AZ
+- Each instance has full read and write permissions to the volume
+- Use Case:
+    - Achieve a higher application availability in clustered Linux applications (ex: Teradata)
+    - Applications must manage concurrent write operations
+- Must use a file system that is cluster-aware (not XFS, EX4, etc ... )
+
+---------------------------------------------------------------------------------------------------------------------
+
+EFS - Elastic File System
+
+- EFS is a network file system (NFS) that allows you to mount the same file system on EC2 instances that are in different AZs.
+- Managed NFS (network file system) that can be mounted on many EC2
+- EFS works with EC2 instances in multi-AZ
+- Highly available, scalable, expensive (3x gp2), pay per use 
+
+Use cases:
+    - Content management,
+    - Web serving,
+    - Wordpress
+    - Data Sharing
+
+- Uses NFSv4.1 protocol
+- Uses security groupt to control access to EFS
+- Compatible with Linux based AMI (not Windows)
+- Encryption at rest using KMS
+
+- POSIX file system (~Linux) that has a standard file API
+- File system scales automatically, pay-per-use, no capacity planning!
+----------------------------------------------------------------------------------------------------------------------
+
+EFS Perfomance and Storage Classes
+- EFS Scale
+    - 1000s of concurrent NFS clients, 10 GB+/s throughput
+    - Grow to Petabyte scale network file system, automatically
+- Performance mode (set at EFS creation time)
+    - General purpose (default): latency-sensitive use cases (web server, CMS etc..)
+    - Max I/O - higher latency, throughput, highly parallel (big data, media processing)
+- Throughput mode
+    - Bursting (1 TB = 50MiB/s to burst of up to 100MiB/s)
+    - Provisioned: set your throughput regardless of storage size, ex: 1GiB/s for 1 TB storage
+- Storage Tiers (lifecycle management feature - move file after N days)
+    - Standard: for frequently accessed files
+    - Infrequent access (EFS-IA): cost to retrieve files, lower price to store
+
+------------------------------------------------------------------------------------------------------------------
+
+EBS vs EFS
+
+- EBS volumes (Elastic Bucket Store):
+    - Can be attached to only one instance at a time
+    - are locked at the availability zone (AZ)
+    - gp2: IO incerases if the disk size increases
+    - io1: can increase IO independently
+- To migrate an EBS volume across AZ:
+    - Take a snapshot
+    - Restore the snapshot to another AZ
+    - EBS backups use IO and you shouldn't run them while your application is handling a lot of traffic
+- Root EBS Volumes of instances get terminated by default if EC2 instance gets terminated (you can disable that)
+
+- EFS (Elastic File System)
+    - Mounting 100s of instances across AZ
+    - EFS share website files (WordPress)
+    - Only for Linux instances (POSIX)
+    - EFS has a higher price point than EBS
+    - Can leverage EFS-IA (Infrequent access) for cost savings
