@@ -88,4 +88,42 @@ Types of Load Balancer on AWS
 
 ------------------------------------------------------------------------------------------------------------------------
 
+Classic Load Balancers (v1)
+
+- Supports TCP (Layer 4), HTTP and HTTPS (Layer 7)
+- Health checks are TCP or HTTP based
+- Fixed hostname: XXX.region.elb.amazonaws.com
+-----------------------------------------------------------------------------------------------------------------------
+
+Application Load Balancer (v2)
+
+- Application load balancers is Layer 7 (HTTP)
+- Load balancing to multiple HTTP applications across machines (target groups)
+- Load balancing to multiple applications on the same machine (ex: containers)
+- Support for HTTP/2 and WebSocket
+- Support redirects (from HTTP to HTTPS for example)
+
+Routing tables to different target groups:
+    - Routing based on path in URL (example.com/users and example.com/posts)
+    - Routing based on hostname in URL (one.example.com and other.example.com)
+    - Routing based on Query String, Headers (example.com/users?id-123&order=false)
+
+- ALB are a great fit for micro services and container based application (example: Docker and Amazon ECS)
+- Has a port mapping feature to redirecy to a dynamic port in ECS
+
+target groups:
+    - EC2 instances (can be managed by an Auto Scaling Group) - HTTP
+    - ECS tasks (managed by ECS itself) - HTTP
+    - Lambda functions - HTTP request is translated into a JSON event
+
+    - ALB can route to multiple target groups
+    - health checks are at the target group level
+
+Good to Know
+    - Fixed hostname (XXX.region.elb.amazonaws.com)
+    - The application servers don't see the IP of the client directly
+        - The true IP of the client is inserted in the header X-Forwared-For
+        - We can also get Port (X-Forwarded-Port) and proto (X-Forwarded-proto)
+
+-----------------------------------------------------------------------------------------------------------------------------
 
